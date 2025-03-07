@@ -1,18 +1,42 @@
-import React from "react";
+import React, { useContext } from "react";
 import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import AppContext from "../context/AppContext";
+import axios from "axios";
 
 const Navbar = () => {
     const navigate = useNavigate();
-    const userData = "";
-    // const userData = {name:"David"};
+    
+    const { userData, auth_api_url, setUserData, setIsLoggedIn } = useContext(AppContext);
 
     const sendVerificationOtp = async () => {
-        console.log("Send OTP")
+        try {
+            axios.defaults.withCredentials = true;
+
+            const response = await axios.post(auth_api_url + '/send-verify-otp');
+            if (response.data.success) {
+                navigate("/email-verify");
+                toast.success(response.data.message);
+            } else {
+                toast.error(response.data.message);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
     };
 
     const logout = async () => {
-        console.log("Logout")
+        try {
+            axios.defaults.withCredentials = true;
+            const response = await axios.post(auth_api_url + '/logout');
+
+            response.data.success &&  setIsLoggedIn(false);
+            response.data.success && setUserData(false);
+            navigate('/');
+        } catch (error) {
+            toast.error(error.message);         
+        }
     };
 
     return (
