@@ -14,7 +14,7 @@ export const register = async (req, res) => {
     }
 
     try {
-        const existingUser = User.findOne({ email });
+        const existingUser = await User.findOne({ email });
 
         if(existingUser) {
             return res.json({
